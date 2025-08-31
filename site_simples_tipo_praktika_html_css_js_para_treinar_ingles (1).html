@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pratique Inglês – Viagem aos EUA</title>
+  <style>
+    :root{
+      --bg:#0b1020; --card:#121933; --muted:#9aa4c7; --text:#e8ecff; --accent:#6cf; --accent2:#7cf59a;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:radial-gradient(1200px 600px at 70% -10%,#1a2250,transparent),linear-gradient(180deg,#0b1020,#0a0f1f);color:var(--text);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+    .wrap{max-width:1100px;margin:0 auto;padding:24px}
+    header{display:flex;gap:12px;align-items:center;justify-content:space-between}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#5ddcff,#3c67e3 43%,#4e00c2);box-shadow:0 8px 30px #3c67e380}
+    h1{font-size:20px;margin:0}
+    .card{background:var(--card);border:1px solid #21306b;border-radius:18px;padding:16px;box-shadow:0 10px 30px #0005}
+    .grid{display:grid;grid-template-columns:340px 1fr;gap:16px;margin-top:16px}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+
+    .sidebar .block{margin-bottom:14px}
+    .label{font-size:12px;color:var(--muted);letter-spacing:.4px;text-transform:uppercase;margin-bottom:6px}
+    select,button,input,textarea{width:100%;background:#0e1530;border:1px solid #223064;color:var(--text);border-radius:12px;padding:10px 12px}
+    button{cursor:pointer;background:linear-gradient(180deg,#192a59,#101a3d);border-color:#2a3e7a}
+    button.primary{background:linear-gradient(180deg,#2a6df0,#1747a8);border-color:#3f7cf1}
+    button.ghost{background:transparent;border-color:#2a3e7a}
+    button:disabled{opacity:.5;cursor:not-allowed}
+    .row{display:flex;gap:8px}
+    .pill{display:inline-flex;align-items:center;gap:8px;background:#0e1530;border:1px solid #24356d;border-radius:999px;padding:6px 10px;font-size:12px}
+
+    .chat{height:520px;overflow:auto;padding-right:6px;scroll-behavior:smooth}
+    .msg{display:flex;gap:10px;margin:10px 0;align-items:flex-end}
+    .msg.ai{flex-direction:row}
+    .msg.me{flex-direction:row-reverse}
+    .bubble{max-width:70%;padding:12px 14px;border-radius:14px;line-height:1.4;border:1px solid #24356d}
+    .ai .bubble{background:linear-gradient(180deg,#101a3d,#0b1331)}
+    .me .bubble{background:linear-gradient(180deg,#0e2d5d,#0c244b)}
+
+    .avatar{width:42px;height:42px;border-radius:50%;background:conic-gradient(from 180deg,#6cf,#8fa7ff,#a78bfa,#6cf);position:relative;overflow:hidden;box-shadow:0 6px 20px #6cf4}
+    .mouth{position:absolute;left:50%;top:55%;transform:translate(-50%,-50%);width:14px;height:6px;background:#050a1a;border-radius:10px;transition:height .14s ease}
+    .speaking .mouth{height:18px}
+
+    .score{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .kpi{background:#0e1530;border:1px solid #24356d;border-radius:14px;padding:12px}
+    .kpi b{display:block;font-size:18px;margin-bottom:6px}
+
+    .composer{display:flex;gap:8px;margin-top:12px}
+    .composer input{flex:1}
+
+    details{background:#0e1530;border:1px solid #24356d;border-radius:12px;padding:10px}
+    summary{cursor:pointer;color:var(--accent)}
+    a{color:var(--accent)}
+    .muted{color:var(--muted)}
+    .progress{height:8px;background:#0e1530;border:1px solid #24356d;border-radius:999px;overflow:hidden}
+    .bar{height:100%;background:linear-gradient(90deg,#6cf,#7cf59a);width:0%}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand"><div class="logo"></div><div>
+        <h1>Treino de Inglês – Viagem aos EUA</h1>
+        <div class="muted">Simulação de situações comuns ao viajar para os Estados Unidos.</div>
+      </div></div>
+      <div class="pill" id="compat-pill">🔉 Checando microfone...</div>
+    </header>
+
+    <div class="grid">
+      <aside class="sidebar card">
+        <div class="block">
+          <div class="label">Cenário</div>
+          <select id="scenarioSelect"></select>
+        </div>
+        <div class="block">
+          <div class="label">Nível alvo</div>
+          <select id="levelSelect">
+            <option value="A1">A1 (iniciante)</option>
+            <option value="A2" selected>A2</option>
+            <option value="B1">B1</option>
+          </select>
+        </div>
+        <div class="block score">
+          <div class="kpi"><b id="kpiWords">0</b><span class="muted">Palavras‑alvo usadas</span></div>
+          <div class="kpi"><b id="kpiConf">–</b><span class="muted">Confiança (fala)</span></div>
+          <div class="kpi"><b id="kpiTurns">0</b><span class="muted">Turnos</span></div>
+        </div>
+        <div class="block">
+          <div class="label">Progresso no cenário</div>
+          <div class="progress"><div class="bar" id="progBar"></div></div>
+        </div>
+        <div class="block row">
+          <button id="btnStart" class="primary">▶️ Iniciar</button>
+          <button id="btnReset" class="ghost">♻️ Reset</button>
+        </div>
+      </aside>
+
+      <main class="card">
+        <div class="row" style="align-items:center; justify-content:space-between; gap:12px;">
+          <div class="row" style="align-items:center; gap:10px;">
+            <div class="avatar" id="avatar"><div class="mouth"></div></div>
+            <div>
+              <div class="label">Persona</div>
+              <div id="personaName">—</div>
+              <div class="muted" id="personaBio">Selecione um cenário para começar.</div>
+            </div>
+          </div>
+          <div class="row" style="min-width:280px;">
+            <button id="btnSpeak">🎙️ Falar</button>
+            <button id="btnStop">🛑 Parar</button>
+            <button id="btnHint">💡 Dica</button>
+          </div>
+        </div>
+
+        <div class="block">
+          <div class="label">Palavras‑alvo</div>
+          <div id="targetWords" class="muted">—</div>
+        </div>
+
+        <div class="chat" id="chat"></div>
+
+        <div class="composer">
+          <input id="textInput" placeholder="Digite em inglês aqui e pressione Enter" />
+          <button id="btnSend">Enviar</button>
+        </div>
+      </main>
+    </div>
+  </div>
+
+<script>
+const SCENARIOS = [
+  {
+    id:"airport", level:["A1","A2","B1"], title:"No Aeroporto", persona:"Agente de Check-in",
+    bio:"Funcionário da companhia aérea no balcão de check-in.",
+    target:{A1:["passport","ticket","bag","seat","gate","boarding"],
+            A2:["baggage","carry-on","upgrade","delay","terminal","departure"],
+            B1:["connection","immigration","customs","allowance","priority"]},
+    prompts:["Good afternoon. May I see your passport?","Do you have any bags to check?","Your gate is B12. Boarding starts at 4:20 pm."],
+    replies:["Thank you. Here is your boarding pass.","Please place your bag on the scale.","All set. Enjoy your flight!"]
+  },
+  {
+    id:"immigration", level:["A1","A2","B1"], title:"Controle de Imigração", persona:"Oficial de Imigração",
+    bio:"Oficial conferindo documentos na chegada aos EUA.",
+    target:{A1:["holiday","business","hotel","friend","tourist"],
+            A2:["purpose","duration","reservation","invitation","return"],
+            B1:["employment","sponsor","itinerary","conference","relatives"]},
+    prompts:["What is the purpose of your visit?","How long will you stay?","Where will you be staying?"],
+    replies:["Okay, thank you for your answer.","Do you have proof of your reservation?","Welcome to the United States!"]
+  },
+  {
+    id:"hotel", level:["A1","A2","B1"], title:"Check-in no Hotel", persona:"Recepcionista",
+    bio:"Funcionário do hotel recebendo hóspedes.",
+    target:{A1:["room","key","bed","breakfast","reservation"],
+            A2:["single","double","credit card","wifi","luggage"],
+            B1:["amenities","early check-in","late check-out","complimentary","suite"]},
+    prompts:["Good evening. Do you have a reservation?","Would you like a single or double room?","Can I have your ID and credit card, please?"],
+    replies:["Here is your room key.","Breakfast is served from 7 to 10 am.","Enjoy your stay!"]
+  }
+];
+
+let state = { scenario: null, level: 'A2', used: new Set(), turns: 0, progress: 0 };
+const el = sel => document.querySelector(sel);
+const say = (text) => {
+  const avatar = el('#avatar'); avatar.classList.add('speaking');
+  const u = new SpeechSynthesisUtterance(text); u.lang = 'en-US';
+  const voice = speechSynthesis.getVoices().find(v=> v.lang.startsWith('en'));
+  if (voice) u.voice = voice;
+  u.onend = () => avatar.classList.remove('speaking');
+  speechSynthesis.speak(u);
+};
+
+function renderScenarioOptions(){
+  const sel = el('#scenarioSelect'); sel.innerHTML = '';
+  SCENARIOS.forEach(s=>{ const opt = document.createElement('option'); opt.value = s.id; opt.textContent = s.title; sel.appendChild(opt); });
+}
+function setScenario(id){
+  const sc = SCENARIOS.find(s=> s.id===id);
+  state.scenario = sc; state.used=new Set(); state.turns=0; state.progress=0;
+  el('#personaName').textContent = `${sc.persona} — ${sc.title}`;
+  el('#personaBio').textContent = sc.bio;
+  renderTargets(); el('#chat').innerHTML=''; botSay(sc.prompts[0]); updateKpis();
+}
+function renderTargets(){
+  const {scenario, level} = state; if(!scenario){el('#targetWords').textContent='—';return;}
+  const words = scenario.target[level]||[];
+  el('#targetWords').innerHTML = words.map(w=>`<span class="pill">${w}</span>`).join(' ');
+}
+function updateKpis(conf){
+  el('#kpiWords').textContent=state.used.size;
+  el('#kpiTurns').textContent=state.turns;
+  el('#kpiConf').textContent=(typeof conf==='number')?Math.round(conf*100)+'%':'–';
+  el('#progBar').style.width=Math.min(100,Math.round(state.progress*100))+'%';
+}
+function addMsg(role,text){
+  const row=document.createElement('div'); row.className=`msg ${role}`;
+  const avatar=document.createElement('div'); avatar.className='avatar'; avatar.innerHTML='<div class="mouth"></div>';
+  const bubble=document.createElement('div'); bubble.className='bubble'; bubble.textContent=text;
+  row.appendChild(avatar); row.appendChild(bubble);
+  el('#chat').appendChild(row); el('#chat').scrollTop=el('#chat').scrollHeight;
+}
+function botSay(text){ addMsg('ai',text); say(text); }
+function scoreFromUserText(text){
+  const toks=text.toLowerCase().split(/\s+/);
+  const targets=(state.scenario.target[state.level]||[]).map(w=>w.toLowerCase());
+  toks.forEach(t=>{if(targets.includes(t)) state.used.add(t)});
+  return {miss:targets.filter(t=>!state.used.has(t))};
+}
+function templatedReply(user){
+  const {miss}=scoreFromUserText(user);
+  state.turns+=1; state.progress=Math.min(1,state.turns/5);
+  updateKpis();
+  let reply= state.scenario.replies[Math.floor(Math.random()*state.scenario.replies.length)];
+  if(miss.length) reply+=` Try to use: ${miss.slice(0,3).join(', ')}.`;
+  return reply;
+}
+let recog=null;let listening=false;
+function setupSpeech(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(SR){recog=new SR();recog.lang='en-US';recog.onresult=(e)=>{const t=e.results[0][0].transcript;const c=e.results[0][0].confidence;addMsg('me',t);const r=templatedReply(t);botSay(r);updateKpis(c);};recog.onend=()=>{listening=false;btnSpeak.disabled=false;}; el('#compat-pill').textContent='✅ Voz disponível';}
+  else{el('#compat-pill').textContent='🔈 Apenas síntese de voz disponível';}
+}
+function startListening(){if(!recog||listening)return;listening=true;btnSpeak.disabled=true;recog.start();}
+function stopListening(){if(recog&&listening){recog.stop();listening=false;btnSpeak.disabled=false;}}
+const btnStart=el('#btnStart'),btnReset=el('#btnReset'),btnSpeak=el('#btnSpeak'),btnStop=el('#btnStop'),btnHint=el('#btnHint'),textInput=el('#textInput'),btnSend=el('#btnSend');
+btnStart.onclick=()=>{setScenario(el('#scenarioSelect').value);};
+btnReset.onclick=()=>{if(state.scenario) setScenario(state.scenario.id);state.used.clear();updateKpis();};
+btnSpeak.onclick=startListening;btnStop.onclick=stopListening;btnHint.onclick=()=>{if(state.scenario)botSay(state.scenario.prompts[0]);};
+btnSend.onclick=sendTyped;textInput.addEventListener('keydown',(e)=>{if(e.key==='Enter'){e.preventDefault();sendTyped();}});
+function sendTyped(){const v=textInput.value.trim();if(!v)return;addMsg('me',v);textInput.value='';const r=templatedReply(v);botSay(r);}
+renderScenarioOptions();setupSpeech();
+</script>
+</body>
+</html>
